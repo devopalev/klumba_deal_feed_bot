@@ -229,7 +229,7 @@ def deal_unapproved(context: CallbackContext):
                     media_list[0].caption = deal_message
                     media_list[0].parse_mode = ParseMode.MARKDOWN_V2
 
-                    bot.send_media_group(chat_id=creds.UNAPPROVED_SHOPS.get(shop_id), media=media_list)
+                    bot.send_media_group(chat_id=creds.UNAPPROVED_SUBDIVISION.get(shop_id), media=media_list)
                 else:
-                    bot.send_message(chat_id=creds.UNAPPROVED_SHOPS.get(shop_id), text=deal_message,
+                    bot.send_message(chat_id=creds.UNAPPROVED_SUBDIVISION.get(shop_id), text=deal_message,
                                      parse_mode=ParseMode.MARKDOWN_V2)

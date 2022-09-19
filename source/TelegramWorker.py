@@ -4,7 +4,7 @@ import os
 import traceback
 from source import config as cfg
 from source import BitrixWorker as BW
-
+from source.approve_equip import TgEquipApprove
 
 from telegram.ext import Updater, MessageHandler, Filters, PicklePersistence, CallbackContext
 
@@ -61,6 +61,8 @@ def run():
     global JOB_QUEUE
     JOB_QUEUE = jq
 
+    dispatcher.add_handler(TgEquipApprove.CV_REAPPROVE_EQUIP_HANDLER)
+    dispatcher.add_handler(TgEquipApprove.CV_APPROVE_EQUIP_HANDLER)
     dispatcher.add_handler(MessageHandler(Filters.all, dummy_callback_handler))
     dispatcher.add_error_handler(error_handler)
 

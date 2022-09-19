@@ -1,7 +1,7 @@
 import os
 import pathlib
 
-from telegram.ext import CallbackContext, ConversationHandler
+from telegram.ext import CallbackContext, ConversationHandler, CallbackQueryHandler, MessageHandler, Filters
 from telegram import InputMediaPhoto, ParseMode, InlineKeyboardMarkup, InlineKeyboardButton, Update, Chat
 
 import source.TextSnippets as Txt
@@ -87,6 +87,8 @@ def reapprove(update: Update, context: CallbackContext):
     photo_urls = BW.get_deal_photo_dl_urls(deal_id, access_token,
                                            (DEAL_BIG_PHOTO_ALIAS,))
 
+    BH.reapprove_deal(deal_id)
+
     # 1024 symbols of caption only, if more -> need a message
     if photo_urls:
         media_list = [InputMediaPhoto(media=el) for el in photo_urls]
@@ -103,15 +105,13 @@ def fallback(update, context):
     return None  # do nothing on fallbacks
 
 
-FESTIVE_CB_HANDLER = FestiveCBQ.FestiveCBQ(callback=festive_decision, pattern=Txt.FESTIVE_ACTION_PATTERN)
-FESTIVE_MESSAGE_HANDLER = MessageHandler(Filters.text & Filters.chat(creds.FESTIVE_APPROVAL_CHAT_ID), festive_comment)
-FESTIVE_CV_HANDLER = ConversationHandler(entry_points=[FESTIVE_CB_HANDLER],
-                                         states={
-                                             State.WRITING_DECLINE_COMMENT: [FESTIVE_MESSAGE_HANDLER]
-                                         },
-                                         fallbacks=[MessageHandler(Filters.all, fallback),
-                                                    CallbackQueryHandler(callback=fallback,
-                                                                         pattern=GlobalTxt.ANY_STRING_PATTERN)])
+CV_APPROVE_EQUIP_HANDLER = ConversationHandler(
+    entry_points=[CallbackQueryHandler(decision,
+                    pattern=f"({Txt.EQUIPPED_APPROVE_BUTTON_KEY}|{Txt.EQUIPPED_DECLINE_BUTTON_KEY})")],
+    states={State.WRITING_DECLINE_COMMENT: [MessageHandler(Filters.text & Filters.chat(creds.EQUIPPED_GROUP_CHAT_ID),
+                                                           callback=comment)]},
+    fallbacks=[MessageHandler(Filters.all, callback=fallback), CallbackQueryHandler(fallback)]
+)
 
-FESTIVE_REAPPROVE_HANDLER = FestiveCBQ.FestiveUnapprovedCBQ(callback=festive_reapprove,
-                                                            pattern=Txt.FESTIVE_REAPPROVE_PATTERN)
+CV_REAPPROVE_EQUIP_HANDLER = CallbackQueryHandler(reapprove, pattern=Txt.EQUIPPED_REAPPROVE_BUTTON_KEY_PREFIX)
+
