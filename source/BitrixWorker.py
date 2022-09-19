@@ -115,3 +115,8 @@ def refresh_oauth(refresh_token):
 def update_deal(deal_id, fields):
     send_request('crm.deal.update', {'id': deal_id,
                                      'fields': fields})
+
+
+def get_deal(deal_id):
+    result = send_request('crm.deal.get', {'id': deal_id})
+    return result

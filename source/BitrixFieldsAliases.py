@@ -3,6 +3,10 @@ DEAL_BIG_PHOTO_ALIAS = 'UF_CRM_1583348851496'  # Фото заказа (боль
 DEAL_CHECKLIST_PHOTO_ALIAS = 'UF_CRM_1587838059218'  # Фото чеклиста (бумажный)
 DEAL_RESERVE_PHOTO_ALIAS = 'UF_CRM_1620936565099'  # Резерв товара, фото
 
+# equipped approvement
+EQUIPPED_APPROVEMENT_ALIAS = 'UF_CRM_1663586411968'  # Согласование укомплектования в telegram
+EQUIPPED_DECLINE_COMMENT_ALIAS = 'UF_CRM_1663586457333'  # Согласование укомплектования: Комментарий по отклонению
+DEAL_SHOP_PERFORMER = "UF_CRM_1612453867429"  # Магазин - исполнитель (бывш. Подразделение, отв. за заказ)
 
 WEBHOOK_DEAL_ID_ALIAS = 'deal_id'
 WEBHOOK_DEAL_FLORIST_ALIAS = 'florist'

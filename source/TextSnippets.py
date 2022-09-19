@@ -31,6 +31,13 @@ DEAL_TEMPLATE = \
                 '*Тип заказа:* *{}*\n'
 #               '{photo}'
 
+DELIMITER_BLOCK_TEXT = '-----------\n\n'
+
+DEAL_DECLINE = '*Кто отклонил:* {}\n' \
+        '*Комментарий по отклонению:* {}\n' + DELIMITER_BLOCK_TEXT
+
+
+
 # Now using: 'reserved', 'waiting for supply'
 DEAL_RESERVED_TEMPLATE = \
                 '*№ заказа:* {}\n' \
@@ -82,6 +89,8 @@ DEAL_UNAPPROVED_TEMPLATE = \
 #               '{photo}'
 
 
+
+
 DEAL_STATE_EQUIPPED = 'укомплектован'
 DEAL_STATE_DELIVERY = 'в доставке'
 
@@ -91,6 +100,8 @@ EQUIPPED_APPROVE_BUTTON_TEXT = 'Согласовать \U00002705'
 EQUIPPED_APPROVE_BUTTON_KEY = 'equipped_approve'
 EQUIPPED_DECLINE_BUTTON_TEXT = 'Отклонить \U0000274C'
 EQUIPPED_DECLINE_BUTTON_KEY = 'equipped_decline'
+EQUIPPED_REAPPROVE_BUTTON_TEXT = 'Исправлено, отправить на пересогласование \U00002705'
+EQUIPPED_REAPPROVE_BUTTON_KEY_PREFIX = 'equipped_reapprove'
 
 DECLINED_HEADER = '{} *ОТКЛОНЕН*\U0000274C \n'
 APPROVED_HEADER = '{} *СОГЛАСОВАН*\U00002705 \n'

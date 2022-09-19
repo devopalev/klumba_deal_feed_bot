@@ -7,5 +7,7 @@ BITRIX_ACTION_UNAPPROVED = 'unapproved'
 DEAL_IS_RESERVED_YES = 'Да'
 DEAL_IS_RESERVED_NO = 'Нет'
 
-
+# equipped approvement
+EQUIPPED_APPROVEMENT_OK = '3463'  # Согласовано
+EQUIPPED_APPROVEMENT_REJECT = '3465'  # Не согласовано
 
