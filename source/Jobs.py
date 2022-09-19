@@ -44,6 +44,11 @@ def deal_equipped(context: CallbackContext):
             photo_urls = BW.get_deal_photo_dl_urls(deal_id, access_token,
                                                    (DEAL_BIG_PHOTO_ALIAS,))
 
+            keyboard = InlineKeyboardMarkup([[InlineKeyboardButton(Txt.EQUIPPED_APPROVE_BUTTON_TEXT,
+                                                                   callback_data=Txt.EQUIPPED_APPROVE_BUTTON_KEY)],
+                                             [InlineKeyboardButton(Txt.EQUIPPED_DECLINE_BUTTON_TEXT,
+                                                                   callback_data=Txt.EQUIPPED_DECLINE_BUTTON_KEY)]])
+
             # 1024 symbols of caption only, if more -> need a message
             if photo_urls:
                 media_list = [InputMediaPhoto(media=el) for el in photo_urls]
