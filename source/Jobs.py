@@ -1,4 +1,3 @@
-import os
 import pathlib
 
 from telegram.ext import CallbackContext
@@ -11,7 +10,6 @@ import source.Utils as Utils
 import source.creds as creds
 from source.BitrixFieldsAliases import *
 from source.BitrixFieldsMappings import *
-from typing import Dict, List
 
 
 def deal_equipped(context: CallbackContext):
