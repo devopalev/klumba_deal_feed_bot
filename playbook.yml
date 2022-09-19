@@ -1,0 +1,32 @@
+- hosts: klumba
+  remote_user: root
+  tasks:
+    - name: Install packages
+      apt:
+        pkg:
+          - build-essential
+          - python3-dev
+        state: latest
+    - name: Install Python packages
+      pip:
+        name:
+          - python-telegram-bot
+    - name: Copy workdir
+      synchronize:
+        src: '{{ playbook_dir }}'
+        dest: /opt/
+        rsync_opts:
+          - "--exclude=.git"
+          - "--exclude=.idea"
+    - name: Copy main service
+      copy:
+        src: /opt/klumba_deal_feed_bot/klumba_deal_feed_bot.service
+        dest: /etc/systemd/system/klumba_deal_feed_bot.service
+        remote_src: yes
+        force: yes
+    - name: Start main service
+      systemd:
+        name: klumba_deal_feed_bot
+        daemon_reload: yes
+        enabled: yes
+        state: restarted
