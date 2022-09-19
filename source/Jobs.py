@@ -11,6 +11,10 @@ import source.Utils as Utils
 import source.creds as creds
 from source.BitrixFieldsAliases import *
 from source.BitrixFieldsMappings import *
+from typing import Dict
+
+
+MESSAGE_LINKS: Dict[str: list] = {}
 
 
 def deal_equipped(context: CallbackContext):
@@ -40,17 +44,13 @@ def deal_equipped(context: CallbackContext):
             photo_urls = BW.get_deal_photo_dl_urls(deal_id, access_token,
                                                    (DEAL_BIG_PHOTO_ALIAS,))
 
-
-            keyboard = InlineKeyboardMarkup([[InlineKeyboardButton("Согласовать")],
-                                             [InlineKeyboardButton("Отклонить")]])
-
             # 1024 symbols of caption only, if more -> need a message
             if photo_urls:
                 media_list = [InputMediaPhoto(media=el) for el in photo_urls]
                 media_list[0].caption = deal_message
                 media_list[0].parse_mode = ParseMode.MARKDOWN_V2
 
-                bot.send_media_group(chat_id=creds.EQUIPPED_GROUP_CHAT_ID, media=media_list)
+                msgs = bot.send_media_group(chat_id=creds.EQUIPPED_GROUP_CHAT_ID, media=media_list)
             else:
                 bot.send_message(chat_id=creds.EQUIPPED_GROUP_CHAT_ID, text=deal_message,
                                  parse_mode=ParseMode.MARKDOWN_V2)
