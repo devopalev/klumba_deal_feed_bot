@@ -110,3 +110,8 @@ def refresh_oauth(refresh_token):
             logger.error(error)
 
     return None, None
+
+
+def update_deal(deal_id, fields):
+    send_request('crm.deal.update', {'id': deal_id,
+                                     'fields': fields})

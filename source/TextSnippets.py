@@ -88,6 +88,13 @@ DEAL_STATE_DELIVERY = 'в доставке'
 FIELD_IS_EMPTY_PLACEHOLDER = 'нет'
 
 EQUIPPED_APPROVE_BUTTON_TEXT = 'Согласовать \U00002705'
-EQUIPPED_APPROVE_BUTTON_KEY = 'festive_approve'
+EQUIPPED_APPROVE_BUTTON_KEY = 'equipped_approve'
 EQUIPPED_DECLINE_BUTTON_TEXT = 'Отклонить \U0000274C'
-EQUIPPED_DECLINE_BUTTON_KEY = 'festive_decline'
+EQUIPPED_DECLINE_BUTTON_KEY = 'equipped_decline'
+
+DECLINED_HEADER = '{} *ОТКЛОНЕН*\U0000274C \n'
+APPROVED_HEADER = '{} *СОГЛАСОВАН*\U00002705 \n'
+REAPPROVED_HEADER = '{} *ИСПРАВЛЕН*\U00002705 \n'
+
+REQUEST_DECLINE_COMMENT = 'Отклоняем заказ {}\\.\n' \
+                          'Напишите, почему?'

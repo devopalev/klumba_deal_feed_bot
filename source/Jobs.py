@@ -11,10 +11,7 @@ import source.Utils as Utils
 import source.creds as creds
 from source.BitrixFieldsAliases import *
 from source.BitrixFieldsMappings import *
-from typing import Dict
-
-
-MESSAGE_LINKS: Dict[str: list] = {}
+from typing import Dict, List
 
 
 def deal_equipped(context: CallbackContext):
@@ -41,24 +38,22 @@ def deal_equipped(context: CallbackContext):
                                                 deal_sum, deal_date, deal_time, deal_type)
 
         if deal_id != Txt.FIELD_IS_EMPTY_PLACEHOLDER:
+            button_ok = InlineKeyboardButton(Txt.EQUIPPED_APPROVE_BUTTON_TEXT,
+                                             callback_data=Txt.EQUIPPED_APPROVE_BUTTON_KEY + f":{deal_id}")
+            button_reject = InlineKeyboardButton(Txt.EQUIPPED_DECLINE_BUTTON_TEXT,
+                                                 callback_data=Txt.EQUIPPED_DECLINE_BUTTON_KEY + f":{deal_id}")
+            keyboard = InlineKeyboardMarkup([[button_ok], [button_reject]])
+
             photo_urls = BW.get_deal_photo_dl_urls(deal_id, access_token,
                                                    (DEAL_BIG_PHOTO_ALIAS,))
-
-            keyboard = InlineKeyboardMarkup([[InlineKeyboardButton(Txt.EQUIPPED_APPROVE_BUTTON_TEXT,
-                                                                   callback_data=Txt.EQUIPPED_APPROVE_BUTTON_KEY)],
-                                             [InlineKeyboardButton(Txt.EQUIPPED_DECLINE_BUTTON_TEXT,
-                                                                   callback_data=Txt.EQUIPPED_DECLINE_BUTTON_KEY)]])
 
             # 1024 symbols of caption only, if more -> need a message
             if photo_urls:
                 media_list = [InputMediaPhoto(media=el) for el in photo_urls]
-                media_list[0].caption = deal_message
-                media_list[0].parse_mode = ParseMode.MARKDOWN_V2
+                bot.send_media_group(chat_id=creds.EQUIPPED_GROUP_CHAT_ID, media=media_list)
 
-                msgs = bot.send_media_group(chat_id=creds.EQUIPPED_GROUP_CHAT_ID, media=media_list)
-            else:
-                bot.send_message(chat_id=creds.EQUIPPED_GROUP_CHAT_ID, text=deal_message,
-                                 parse_mode=ParseMode.MARKDOWN_V2)
+            bot.send_message(chat_id=creds.EQUIPPED_GROUP_CHAT_ID, text=deal_message,
+                             parse_mode=ParseMode.MARKDOWN_V2, reply_markup=keyboard)
 
 
 def deal_in_delivery(context: CallbackContext):
