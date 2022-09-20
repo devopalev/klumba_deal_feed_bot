@@ -31,7 +31,10 @@ WEBHOOK_SUBDIVISION_ALIAS = 'subdivision'
 WEBHOOK_CLIENT_COMMENT_ALIAS = 'client_comment'
 WEBHOOK_CLIENT_CALLBACK_ALIAS = 'client_callback'
 WEBHOOK_EQUIPPER_ALIAS = 'equipper'
-WEBHOOK_SOURCE_ALIAS = 'source'
-
-
+WEBHOOK_SOURCE_ALIAS = 'source'  # источник
+WEBHOOK_IS_RETURN_CUSTOMER_ALIAS = 'is_return_customer'  # повтрная сделка
+WEBHOOK_CREATE_DATE_ALIAS = 'create_date'  # дата создания
+WEBHOOK_POSSIBLE_CLOSING_DATE = 'possible_closing_date'  # Предполагаемая дата закрытия
+WEBHOOK_CAUSE_FAILED_ALIAS = 'cause_failed'  # причина провала
+WEBHOOK_CONTACT_ALIAS = 'contact'
 

@@ -233,3 +233,26 @@ def deal_unapproved(context: CallbackContext):
                 else:
                     bot.send_message(chat_id=creds.UNAPPROVED_SUBDIVISION.get(shop_id), text=deal_message,
                                      parse_mode=ParseMode.MARKDOWN_V2)
+
+
+def deal_failed(context: CallbackContext):
+    query_components = context.job.context
+    bot = context.bot
+
+    deal_id = Utils.prepare_external_field(query_components, WEBHOOK_DEAL_ID_ALIAS)
+    deal_responsible = Utils.prepare_external_field(query_components, WEBHOOK_DEAL_RESPONSIBLE_ALIAS)
+    deal_order = Utils.prepare_external_field(query_components, WEBHOOK_DEAL_ORDER_ALIAS)
+    deal_sum = Utils.prepare_external_field(query_components, WEBHOOK_SUM_ALIAS)
+    deal_source = Utils.prepare_external_field(query_components, WEBHOOK_SOURCE_ALIAS)
+    deal_repeat = 'да' if query_components.get(WEBHOOK_IS_RETURN_CUSTOMER_ALIAS) == 'Y' else 'нет'
+    deal_create_date = Utils.prepare_external_field(query_components, WEBHOOK_CREATE_DATE_ALIAS)
+    deal_possible_closing_date = Utils.prepare_external_field(query_components, WEBHOOK_POSSIBLE_CLOSING_DATE)
+    deal_cause_failed = Utils.prepare_external_field(query_components, WEBHOOK_CAUSE_FAILED_ALIAS)
+    deal_contact = Utils.prepare_external_field(query_components, WEBHOOK_CONTACT_ALIAS)
+
+    text = Txt.DEAL_FAILED_TEMPLATE.format(deal_id, deal_responsible, deal_source, deal_order, deal_sum, deal_repeat,
+                                           deal_create_date, deal_possible_closing_date, deal_cause_failed,
+                                           deal_contact)
+
+    bot.send_message(chat_id=creds.FAILED_DEAL_GROUP_CHAT_ID, text=text,
+                     parse_mode=ParseMode.MARKDOWN_V2)
