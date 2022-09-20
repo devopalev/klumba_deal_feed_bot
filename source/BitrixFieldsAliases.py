@@ -2,6 +2,7 @@
 DEAL_BIG_PHOTO_ALIAS = 'UF_CRM_1583348851496'  # Фото заказа (большое)
 DEAL_CHECKLIST_PHOTO_ALIAS = 'UF_CRM_1587838059218'  # Фото чеклиста (бумажный)
 DEAL_RESERVE_PHOTO_ALIAS = 'UF_CRM_1620936565099'  # Резерв товара, фото
+DEAL_POSTCARD_PHOTO_ALIAS = 'UF_CRM_1640434640'  # Фото открытки
 
 # equipped approvement
 EQUIPPED_APPROVEMENT_ALIAS = 'UF_CRM_1663586411968'  # Согласование укомплектования в telegram

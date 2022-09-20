@@ -43,13 +43,15 @@ def deal_equipped(context: CallbackContext):
             keyboard = InlineKeyboardMarkup([[button_ok], [button_reject]])
 
             photo_urls = BW.get_deal_photo_dl_urls(deal_id, access_token,
-                                                   (DEAL_BIG_PHOTO_ALIAS,))
+                                                   (DEAL_BIG_PHOTO_ALIAS, DEAL_POSTCARD_PHOTO_ALIAS))
 
             # 1024 symbols of caption only, if more -> need a message
             if photo_urls:
                 media_list = [InputMediaPhoto(media=el) for el in photo_urls]
+                media_list[0].caption = f'⬇⬇⬇ {deal_id} ⬇⬇⬇'
                 bot.send_media_group(chat_id=creds.EQUIPPED_GROUP_CHAT_ID, media=media_list)
-
+            else:
+                deal_message = "*Фото не найдены!*\n\n" + deal_message
             bot.send_message(chat_id=creds.EQUIPPED_GROUP_CHAT_ID, text=deal_message,
                              parse_mode=ParseMode.MARKDOWN_V2, reply_markup=keyboard)
 

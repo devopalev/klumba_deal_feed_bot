@@ -18,7 +18,7 @@ def decision(update: Update, context: CallbackContext):
 
     if action == Txt.EQUIPPED_APPROVE_BUTTON_KEY:
         BH.approve_deal(deal_id)
-        context.user_data.pop(cfg.APPROVE_EQUIP_DATA_KEY)
+        context.user_data.pop(cfg.APPROVE_EQUIP_DATA_KEY, None)
         msg_text = update.callback_query.message.text_markdown_v2
         update.effective_chat.send_message(Txt.APPROVED_HEADER.format(deal_id), parse_mode=ParseMode.MARKDOWN_V2)
         update.callback_query.edit_message_text(Txt.APPROVED_HEADER.format(deal_id) + msg_text,
@@ -43,7 +43,7 @@ def comment(update: Update, context):
     deal = BW.get_deal(deal_id)
     unapproved_chat_id = BH.get_shop_chat_id(deal)
     access_token = context.bot_data[cfg.BOT_ACCESS_TOKEN_PERSISTENT_KEY]
-    photo_urls = BW.get_deal_photo_dl_urls(deal, access_token, (DEAL_BIG_PHOTO_ALIAS,))
+    photo_urls = BH.get_deal_photo_dl_urls(deal, access_token, (DEAL_BIG_PHOTO_ALIAS, DEAL_POSTCARD_PHOTO_ALIAS))
 
     if deal:
         unapproved_chat = Chat(bot=context.bot, id=unapproved_chat_id, type=Chat.SUPERGROUP)
@@ -51,12 +51,13 @@ def comment(update: Update, context):
             [InlineKeyboardButton(text=Txt.EQUIPPED_REAPPROVE_BUTTON_TEXT,
                                   callback_data=Txt.EQUIPPED_REAPPROVE_BUTTON_KEY_PREFIX + f":{deal_id}")]]
 
-        link_user = f"[{update.message.from_user.full_name}](tg://user?id={update.message.from_user.id}"
-        text_unapproved = Txt.DECLINED_HEADER.format(deal_id) + Txt.DEAL_DECLINE.format(link_user, context) + \
+        link_user = f"[{update.message.from_user.full_name}](tg://user?id={update.message.from_user.id})"
+        text_unapproved = Txt.DECLINED_HEADER.format(deal_id) + Txt.DEAL_DECLINE.format(link_user, text) + \
                           deal_message.text_markdown_v2
 
         if photo_urls:
             media_list = [InputMediaPhoto(media=el) for el in photo_urls]
+            media_list[0].caption = f'⬇⬇⬇ {deal_id} ⬇⬇⬇'
             unapproved_chat.send_media_group(media=media_list)
         unapproved_chat.send_message(text_unapproved, reply_markup=InlineKeyboardMarkup(keyboard),
                                      parse_mode=ParseMode.MARKDOWN_V2)
@@ -66,7 +67,7 @@ def comment(update: Update, context):
 
 
 def reapprove(update: Update, context: CallbackContext):
-    orig_text = update.callback_query.message.text.split(Txt.DELIMITER_BLOCK_TEXT)[1]
+    orig_text = update.callback_query.message.text_markdown_v2.split(Txt.DELIMITER_BLOCK_TEXT)[1]
     deal_id = update.callback_query.data.split(':')[1]
 
     button_ok = InlineKeyboardButton(Txt.EQUIPPED_APPROVE_BUTTON_TEXT,
@@ -77,19 +78,21 @@ def reapprove(update: Update, context: CallbackContext):
 
     access_token = context.bot_data[cfg.BOT_ACCESS_TOKEN_PERSISTENT_KEY]
     photo_urls = BW.get_deal_photo_dl_urls(deal_id, access_token,
-                                           (DEAL_BIG_PHOTO_ALIAS,))
+                                           (DEAL_BIG_PHOTO_ALIAS, DEAL_POSTCARD_PHOTO_ALIAS))
 
     BH.reapprove_deal(deal_id)
 
     # 1024 symbols of caption only, if more -> need a message
     if photo_urls:
         media_list = [InputMediaPhoto(media=el) for el in photo_urls]
+        media_list[0].caption = f'⬇⬇⬇ {deal_id} ⬇⬇⬇'
         context.bot.send_media_group(chat_id=creds.EQUIPPED_GROUP_CHAT_ID, media=media_list)
 
     context.bot.send_message(chat_id=creds.EQUIPPED_GROUP_CHAT_ID, text=orig_text,
                              parse_mode=ParseMode.MARKDOWN_V2, reply_markup=keyboard)
 
-    text = Txt.REAPPROVED_HEADER.format(deal_id) + update.callback_query.message.text_markdown_v2
+    text = update.callback_query.message.text_markdown_v2.replace(Txt.DECLINED_HEADER.format(deal_id),
+                                                                  Txt.REAPPROVED_HEADER.format(deal_id))
     update.callback_query.edit_message_text(text, parse_mode=ParseMode.MARKDOWN_V2)
 
 
