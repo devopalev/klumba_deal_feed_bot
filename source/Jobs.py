@@ -276,3 +276,14 @@ def reclamation_report(context: CallbackContext):
         file = InputFile(pdf.content, f"report_{recl_id}.pdf")
         caption = f"📢 Закрыта рекламация №{recl_id}\n<b>Результат:</b> {recl_stage}"
         context.bot.send_document(creds.RECLAMATION_GROUP_CHAT_ID, file, caption=caption, parse_mode=ParseMode.HTML)
+
+
+def reclamation_new(context: CallbackContext):
+    query_components = context.job.context
+    recl_id = Utils.prepare_external_field(query_components, WEBHOOK_DEAL_ID_ALIAS)
+    recl_source = Utils.prepare_external_field(query_components, WEBHOOK_SOURCE_ALIAS)
+    text = f"📢 Создана рекламация №{recl_id}\n<b>Источник:</b> {recl_source}"
+    context.bot.send_message(chat_id=creds.RECLAMATION_GROUP_CHAT_ID, text=text, parse_mode=ParseMode.HTML)
+
+
+
