@@ -7,6 +7,7 @@ import source.approve_equip.BitrixHandler as BH
 import source.config as cfg
 import source.creds as creds
 from source.BitrixFieldsAliases import *
+import source.Utils as Utils
 
 
 class State:
@@ -19,9 +20,13 @@ def decision(update: Update, context: CallbackContext):
     if action == Txt.EQUIPPED_APPROVE_BUTTON_KEY:
         BH.approve_deal(deal_id)
         context.user_data.pop(cfg.APPROVE_EQUIP_DATA_KEY, None)
+        user_id = update.callback_query.from_user.id
+        fullname = update.callback_query.from_user.full_name
+        link_user = f"[{fullname}](tg://user?id={user_id})"
         msg_text = update.callback_query.message.text_markdown_v2
-        update.effective_chat.send_message(Txt.APPROVED_HEADER.format(deal_id), parse_mode=ParseMode.MARKDOWN_V2)
-        update.callback_query.edit_message_text(Txt.APPROVED_HEADER.format(deal_id) + msg_text,
+        update.effective_chat.send_message(Txt.APPROVED_HEADER.format(deal_id, link_user),
+                                           parse_mode=ParseMode.MARKDOWN_V2)
+        update.callback_query.edit_message_text(Txt.APPROVED_HEADER.format(deal_id, link_user) + msg_text,
                                                 parse_mode=ParseMode.MARKDOWN_V2)
         return ConversationHandler.END
 
@@ -33,7 +38,7 @@ def decision(update: Update, context: CallbackContext):
 
 
 def comment(update: Update, context):
-    text = update.message.text
+    text = Utils.escape_mdv2(update.message.text)
     deal_message = context.user_data[cfg.APPROVE_EQUIP_DATA_KEY]['message']
     deal_id = context.user_data[cfg.APPROVE_EQUIP_DATA_KEY]['deal_id']
 
@@ -51,7 +56,8 @@ def comment(update: Update, context):
             [InlineKeyboardButton(text=Txt.EQUIPPED_REAPPROVE_BUTTON_TEXT,
                                   callback_data=Txt.EQUIPPED_REAPPROVE_BUTTON_KEY_PREFIX + f":{deal_id}")]]
 
-        link_user = f"[{update.message.from_user.full_name}](tg://user?id={update.message.from_user.id})"
+        fullname = Utils.escape_mdv2(update.message.from_user.full_name)
+        link_user = f"[{fullname}](tg://user?id={update.message.from_user.id})"
         text_unapproved = Txt.DECLINED_HEADER.format(deal_id) + Txt.DEAL_DECLINE.format(link_user, text) + \
                           deal_message.text_markdown_v2
 

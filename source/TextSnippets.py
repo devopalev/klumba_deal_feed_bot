@@ -114,7 +114,7 @@ EQUIPPED_REAPPROVE_BUTTON_TEXT = 'Исправлено, отправить на 
 EQUIPPED_REAPPROVE_BUTTON_KEY_PREFIX = 'equipped_reapprove'
 
 DECLINED_HEADER = '{} *ОТКЛОНЕН*\U0000274C \n'
-APPROVED_HEADER = '{} *СОГЛАСОВАН*\U00002705 \n'
+APPROVED_HEADER = '{} *СОГЛАСОВАН*\U00002705 \({}\)\n'
 REAPPROVED_HEADER = '{} *ИСПРАВЛЕН*\U00002705 \n'
 
 REQUEST_DECLINE_COMMENT = 'Отклоняем заказ {}.\n' \
