@@ -249,10 +249,12 @@ def deal_failed(context: CallbackContext):
     deal_possible_closing_date = Utils.prepare_external_field(query_components, WEBHOOK_POSSIBLE_CLOSING_DATE)
     deal_cause_failed = Utils.prepare_external_field(query_components, WEBHOOK_CAUSE_FAILED_ALIAS)
     deal_contact = Utils.prepare_external_field(query_components, WEBHOOK_CONTACT_ALIAS)
+    deal_date = Utils.prepare_external_field(query_components, WEBHOOK_DATE_ALIAS)
+    deal_time = Utils.prepare_external_field(query_components, WEBHOOK_TIME_ALIAS)
 
     text = Txt.DEAL_FAILED_TEMPLATE.format(deal_id, deal_responsible, deal_source, deal_order, deal_sum, deal_repeat,
-                                           deal_create_date, deal_possible_closing_date, deal_cause_failed,
-                                           deal_contact)
+                                           deal_create_date, deal_possible_closing_date, deal_date, deal_time,
+                                           deal_cause_failed, deal_contact)
 
     bot.send_message(chat_id=creds.FAILED_DEAL_GROUP_CHAT_ID, text=text,
                      parse_mode=ParseMode.MARKDOWN_V2)
