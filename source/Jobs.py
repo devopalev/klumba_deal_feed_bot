@@ -244,7 +244,7 @@ def deal_failed(context: CallbackContext):
     deal_order = Utils.prepare_external_field(query_components, WEBHOOK_DEAL_ORDER_ALIAS)
     deal_sum = Utils.prepare_external_field(query_components, WEBHOOK_SUM_ALIAS)
     deal_source = Utils.prepare_external_field(query_components, WEBHOOK_SOURCE_ALIAS)
-    deal_repeat = 'да' if query_components.get(WEBHOOK_IS_RETURN_CUSTOMER_ALIAS) == 'Y' else 'нет'
+    deal_repeat = 'да' if 'Y' in query_components.get(WEBHOOK_IS_RETURN_CUSTOMER_ALIAS) else 'нет'
     deal_create_date = Utils.prepare_external_field(query_components, WEBHOOK_CREATE_DATE_ALIAS)
     deal_possible_closing_date = Utils.prepare_external_field(query_components, WEBHOOK_POSSIBLE_CLOSING_DATE)
     deal_cause_failed = Utils.prepare_external_field(query_components, WEBHOOK_CAUSE_FAILED_ALIAS)
