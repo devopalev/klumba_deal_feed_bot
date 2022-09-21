@@ -38,3 +38,5 @@ WEBHOOK_POSSIBLE_CLOSING_DATE = 'possible_closing_date'  # Предполага�
 WEBHOOK_CAUSE_FAILED_ALIAS = 'cause_failed'  # причина провала
 WEBHOOK_CONTACT_ALIAS = 'contact'
 
+WEBHOOK_RECLAMATION_REPORT_ALIAS = 'report'
+WEBHOOK_RECLAMATION_STAGE_ALIAS = 'stage'

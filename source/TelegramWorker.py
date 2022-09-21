@@ -1,4 +1,7 @@
-from . import creds
+import datetime
+import pytz
+
+from source import creds
 import logging
 import os
 import traceback
@@ -6,7 +9,7 @@ from source import config as cfg
 from source import BitrixWorker as BW
 from source.approve_equip import TgEquipApprove
 
-from telegram.ext import Updater, MessageHandler, Filters, PicklePersistence, CallbackContext
+from telegram.ext import Updater, MessageHandler, Filters, PicklePersistence, CallbackContext, JobQueue
 
 from telegram import ParseMode, Update
 
@@ -41,6 +44,30 @@ def bitrix_oauth_update_job(context: CallbackContext):
             context.bot_data[cfg.BOT_REFRESH_TOKEN_PERSISTENT_KEY] = r_token
 
 
+def reclamations_report_day(context: CallbackContext):
+    params = {'filter': {'CLOSEDATE': str(datetime.date.today()), 'CATEGORY_ID': '45', 'CLOSED': 'Y'},
+              'select': ['STAGE_ID']}
+    res = BW.send_request('crm.deal.list', params=params, handle_next=True)
+    all_r = len(res)
+    good = 0
+    for reclamation in res:
+        good += 1 if 'WON' in reclamation.get('STAGE_ID') else 0
+    bad = all_r - good
+    percent = good / all_r * 100
+    if percent > 95:
+        emoji = '🟢'
+    elif percent > 90:
+        emoji = '🟡'
+    elif percent > 85:
+        emoji = '🟠'
+    else:
+        emoji = '🔴'
+
+    text = f"{emoji} Отчет дня по рекламациям\n\n<b>Всего</b>: {all_r}\n<b>" \
+           f"Успешных</b>: {good}\n<b>Проваленных</b>: {bad}"
+    context.bot.send_message(creds.RECLAMATION_GROUP_CHAT_ID, text, ParseMode.HTML)
+
+
 # entry point
 def run():
     os.makedirs(cfg.DATA_DIR_NAME, exist_ok=True)
@@ -57,6 +84,8 @@ def run():
 
     jq = updater.job_queue
     jq.run_repeating(bitrix_oauth_update_job, interval=cfg.BITRIX_OAUTH_UPDATE_INTERVAL, first=1)
+    tzinfo = pytz.timezone('Europe/Moscow')
+    jq.run_daily(reclamations_report_day, days=(0, 1, 2, 3, 4), time=datetime.time(18, tzinfo=tzinfo))
 
     global JOB_QUEUE
     JOB_QUEUE = jq

@@ -1,7 +1,8 @@
 import pathlib
 
+import requests
 from telegram.ext import CallbackContext
-from telegram import InputMediaPhoto, ParseMode, InlineKeyboardMarkup, InlineKeyboardButton
+from telegram import InputMediaPhoto, ParseMode, InlineKeyboardMarkup, InlineKeyboardButton, InputFile
 
 import source.TextSnippets as Txt
 import source.BitrixWorker as BW
@@ -258,3 +259,20 @@ def deal_failed(context: CallbackContext):
 
     bot.send_message(chat_id=creds.FAILED_DEAL_GROUP_CHAT_ID, text=text,
                      parse_mode=ParseMode.MARKDOWN_V2)
+
+
+def reclamation_report(context: CallbackContext):
+    query_components = context.job.context
+
+    doc_id = query_components.get(WEBHOOK_RECLAMATION_REPORT_ALIAS)[0]
+    recl_id = Utils.prepare_external_field(query_components, WEBHOOK_DEAL_ID_ALIAS)
+    recl_stage = Utils.prepare_external_field(query_components, WEBHOOK_RECLAMATION_STAGE_ALIAS)
+    res = BW.send_request('crm.documentgenerator.document.get', params={'id': doc_id})
+
+    if res:
+        url = res['document'].get('pdfUrlMachine')
+        pdf = requests.get(url)
+
+        file = InputFile(pdf.content, f"report_{recl_id}.pdf")
+        caption = f"📢 Закрыта рекламация №{recl_id}\n<b>Результат:</b> {recl_stage}"
+        context.bot.send_document(creds.RECLAMATION_GROUP_CHAT_ID, file, caption=caption, parse_mode=ParseMode.HTML)

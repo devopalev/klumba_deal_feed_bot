@@ -38,6 +38,8 @@ class DealUpdatesHandler(BaseHTTPRequestHandler):
                     TelegramWorker.JOB_QUEUE.run_once(callback=Jobs.deal_unapproved, when=0, context=query_components)
                 elif action == BitrixFieldsMappings.BITRIX_ACTION_FAILED:
                     TelegramWorker.JOB_QUEUE.run_once(callback=Jobs.deal_failed, when=0, context=query_components)
+                elif action == BitrixFieldsMappings.BITRIX_ACTION_RECLAMATION_REPORT:
+                    TelegramWorker.JOB_QUEUE.run_once(callback=Jobs.reclamation_report, when=0, context=query_components)
                 else:
                     logger.error('Wrong Bitrix action passed: %s', action)
             else:
