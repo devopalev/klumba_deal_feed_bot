@@ -1,6 +1,6 @@
 import requests
 import time
-from . import creds
+from source import creds
 import logging
 from threading import Lock
 
@@ -120,3 +120,10 @@ def update_deal(deal_id, fields):
 def get_deal(deal_id):
     result = send_request('crm.deal.get', {'id': deal_id})
     return result
+# import datetime, pprint
+# params = {'filter': {'CLOSEDATE': str(datetime.date.today()), 'CATEGORY_ID': '45', 'CLOSED': 'Y'},
+#               'select': ['STAGE_ID', 'UF_CRM_1663853657']}
+# res = send_request('crm.deal.list', params=params, handle_next=True)
+# pprint.pprint(res)
+# res = send_request('lists.element.get', params={'IBLOCK_ID': '97', 'IBLOCK_TYPE_ID': 'lists'}, handle_next=True)
+# pprint.pprint(res)
