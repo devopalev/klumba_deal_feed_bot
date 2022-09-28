@@ -37,6 +37,7 @@ WEBHOOK_CREATE_DATE_ALIAS = 'create_date'  # дата создания
 WEBHOOK_POSSIBLE_CLOSING_DATE = 'possible_closing_date'  # Предполагаемая дата закрытия
 WEBHOOK_CAUSE_FAILED_ALIAS = 'cause_failed'  # причина провала
 WEBHOOK_CONTACT_ALIAS = 'contact'
+WEBHOOK_VERIFICATION_KK_ALIAS = 'verification_kk'
 
 WEBHOOK_RECLAMATION_REPORT_ALIAS = 'report'
 WEBHOOK_RECLAMATION_STAGE_ALIAS = 'stage'

@@ -240,25 +240,26 @@ def deal_failed(context: CallbackContext):
     query_components = context.job.context
     bot = context.bot
 
-    deal_id = Utils.prepare_external_field(query_components, WEBHOOK_DEAL_ID_ALIAS)
-    deal_responsible = Utils.prepare_external_field(query_components, WEBHOOK_DEAL_RESPONSIBLE_ALIAS)
-    deal_order = Utils.prepare_external_field(query_components, WEBHOOK_DEAL_ORDER_ALIAS)
-    deal_sum = Utils.prepare_external_field(query_components, WEBHOOK_SUM_ALIAS)
-    deal_source = Utils.prepare_external_field(query_components, WEBHOOK_SOURCE_ALIAS)
+    deal_id = Utils.prepare_external_field(query_components, WEBHOOK_DEAL_ID_ALIAS, False)
+    deal_responsible = Utils.prepare_external_field(query_components, WEBHOOK_DEAL_RESPONSIBLE_ALIAS, False)
+    deal_order = Utils.prepare_external_field(query_components, WEBHOOK_DEAL_ORDER_ALIAS, False)
+    deal_sum = Utils.prepare_external_field(query_components, WEBHOOK_SUM_ALIAS, False)
+    deal_source = Utils.prepare_external_field(query_components, WEBHOOK_SOURCE_ALIAS, False)
     deal_repeat = 'да' if 'Y' in query_components.get(WEBHOOK_IS_RETURN_CUSTOMER_ALIAS) else 'нет'
-    deal_create_date = Utils.prepare_external_field(query_components, WEBHOOK_CREATE_DATE_ALIAS)
-    deal_possible_closing_date = Utils.prepare_external_field(query_components, WEBHOOK_POSSIBLE_CLOSING_DATE)
-    deal_cause_failed = Utils.prepare_external_field(query_components, WEBHOOK_CAUSE_FAILED_ALIAS)
-    deal_contact = Utils.prepare_external_field(query_components, WEBHOOK_CONTACT_ALIAS)
-    deal_date = Utils.prepare_external_field(query_components, WEBHOOK_DATE_ALIAS)
-    deal_time = Utils.prepare_external_field(query_components, WEBHOOK_TIME_ALIAS)
-
+    deal_create_date = Utils.prepare_external_field(query_components, WEBHOOK_CREATE_DATE_ALIAS, False)
+    deal_possible_closing_date = Utils.prepare_external_field(query_components, WEBHOOK_POSSIBLE_CLOSING_DATE, False)
+    deal_cause_failed = Utils.prepare_external_field(query_components, WEBHOOK_CAUSE_FAILED_ALIAS, False)
+    deal_contact = Utils.prepare_external_field(query_components, WEBHOOK_CONTACT_ALIAS, False)
+    deal_date = Utils.prepare_external_field(query_components, WEBHOOK_DATE_ALIAS, False)
+    deal_time = Utils.prepare_external_field(query_components, WEBHOOK_TIME_ALIAS, False)
+    verification_kk = Utils.prepare_external_field(query_components, WEBHOOK_VERIFICATION_KK_ALIAS, False)
+    verification_kk = ('❌ ' if 'рекламация' in verification_kk else '✅ ') + verification_kk
     text = Txt.DEAL_FAILED_TEMPLATE.format(deal_id, deal_responsible, deal_source, deal_order, deal_sum, deal_repeat,
                                            deal_create_date, deal_possible_closing_date, deal_date, deal_time,
-                                           deal_cause_failed, deal_contact)
+                                           deal_cause_failed, deal_contact, verification_kk)
 
     bot.send_message(chat_id=creds.FAILED_DEAL_GROUP_CHAT_ID, text=text,
-                     parse_mode=ParseMode.MARKDOWN_V2)
+                     parse_mode=ParseMode.HTML)
 
 
 def reclamation_report(context: CallbackContext):
