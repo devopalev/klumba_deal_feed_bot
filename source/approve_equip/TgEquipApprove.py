@@ -48,7 +48,8 @@ def comment(update: Update, context):
     deal = BW.get_deal(deal_id)
     unapproved_chat_id = BH.get_shop_chat_id(deal)
     access_token = context.bot_data[cfg.BOT_ACCESS_TOKEN_PERSISTENT_KEY]
-    photo_urls = BH.get_deal_photo_dl_urls(deal, access_token, (DEAL_BIG_PHOTO_ALIAS, DEAL_POSTCARD_PHOTO_ALIAS))
+    photo_urls = BH.get_deal_photo_dl_urls(deal, access_token, (DEAL_BIG_PHOTO_ALIAS, DEAL_POSTCARD_PHOTO_ALIAS,
+                                                                DEAL_CHECKLIST_PHOTO_ALIAS))
 
     if deal:
         unapproved_chat = Chat(bot=context.bot, id=unapproved_chat_id, type=Chat.SUPERGROUP)
@@ -84,7 +85,8 @@ def reapprove(update: Update, context: CallbackContext):
 
     access_token = context.bot_data[cfg.BOT_ACCESS_TOKEN_PERSISTENT_KEY]
     photo_urls = BW.get_deal_photo_dl_urls(deal_id, access_token,
-                                           (DEAL_BIG_PHOTO_ALIAS, DEAL_POSTCARD_PHOTO_ALIAS))
+                                           (DEAL_BIG_PHOTO_ALIAS, DEAL_POSTCARD_PHOTO_ALIAS,
+                                            DEAL_CHECKLIST_PHOTO_ALIAS))
 
     BH.reapprove_deal(deal_id)
 
