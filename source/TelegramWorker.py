@@ -12,6 +12,7 @@ import traceback
 from source import config as cfg
 from source import BitrixWorker as BW
 from source.approve_equip import TgEquipApprove
+import source.late_deals.TgHandler as LateDeals
 
 from telegram.ext import Updater, MessageHandler, Filters, PicklePersistence, CallbackContext, JobQueue
 
@@ -120,6 +121,7 @@ def run():
     dispatcher.add_handler(TgEquipApprove.CV_REAPPROVE_EQUIP_HANDLER)
     dispatcher.add_handler(TgEquipApprove.CV_APPROVE_EQUIP_HANDLER)
     dispatcher.add_handler(MessageHandler(Filters.all, dummy_callback_handler))
+    LateDeals.register_handlers(dispatcher)
     dispatcher.add_error_handler(error_handler)
 
     updater.start_polling(allowed_updates=Update.ALL_TYPES)

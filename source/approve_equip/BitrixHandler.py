@@ -1,19 +1,7 @@
-import os
-import pathlib
-
-from telegram.ext import CallbackContext, ConversationHandler
-from telegram import InputMediaPhoto, ParseMode, InlineKeyboardMarkup, InlineKeyboardButton, Update
-
-import source.TextSnippets as Txt
 import source.BitrixWorker as BW
 import source.BitrixFieldsAliases as BFA
 import source.BitrixFieldsMappings as BFM
-import source.config as cfg
-import source.Utils as Utils
 import source.creds as creds
-from source.BitrixFieldsAliases import *
-from source.BitrixFieldsMappings import *
-from typing import Dict, List
 
 
 def approve_deal(deal_id):

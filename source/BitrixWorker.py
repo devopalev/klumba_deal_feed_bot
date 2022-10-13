@@ -103,7 +103,7 @@ def refresh_oauth(refresh_token):
                 logger.info('OAuth refreshed')
                 return access_token, refresh_token
             else:
-                logger.error("Error OAuth refreshing: %s", response)
+                logger.error("Error OAuth refreshing: %s", response.text)
 
         except Exception as e:
             error = 'Bitrix OAuth refresh exception %s' % e
