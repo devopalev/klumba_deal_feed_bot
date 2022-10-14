@@ -9,9 +9,14 @@ def create_reclamation(update: Update, context: CallbackContext):
     fullname = update.callback_query.from_user.full_name
     link_user = f'<a href="tg://user?id={update.callback_query.from_user.id}">{fullname}</a>'
     massage_text = update.callback_query.message.text
-    text = f"☠ Создана рекламация ({link_user})\n\n{massage_text}"
-    BH.create_reclamation(deal_id, fullname)
-    update.callback_query.edit_message_text(text=text, parse_mode=ParseMode.HTML)
+
+    # res = BH.create_reclamation(deal_id, fullname)
+    res = False
+    if res:
+        update.callback_query.edit_message_text(text=f"☠ Создана рекламация ({link_user})\n\n{massage_text}",
+                                                parse_mode=ParseMode.HTML)
+    else:
+        update.callback_query.message.reply_text("Не удалось создать рекламацию. \n@yngphenix, обрати внимание.")
 
 
 def late_ok(update: Update, context: CallbackContext):
