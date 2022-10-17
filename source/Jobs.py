@@ -291,11 +291,9 @@ def reclamation_new(context: CallbackContext):
 def late_deal(context: CallbackContext):
     query_components = context.job.context
     deal_id = Utils.prepare_external_field(query_components, WEBHOOK_DEAL_ID_ALIAS)
-    text_event = Utils.prepare_external_field(query_components, 'text_event')
-    comment = Utils.prepare_external_field(query_components, 'comment_operator')
-    text = f"{text_event}\n\nКомментарий оператора: {comment}"
+    text_event = Utils.prepare_external_field(query_components, 'text_event', False).replace('_', '\n')
     keyboard = [[InlineKeyboardButton("Ок 👌", callback_data="late_deal_ok")],
                 [InlineKeyboardButton("Создать рекламацию ☠", callback_data=f"late_deal_new_reclamation:{deal_id}")]]
 
-    context.bot.send_message(chat_id=-1001871720175, text=text,
-                             reply_markup=InlineKeyboardMarkup(keyboard))
+    context.bot.send_message(chat_id=-1001871720175, text=text_event,
+                             reply_markup=InlineKeyboardMarkup(keyboard), parse_mode=ParseMode.HTML)
