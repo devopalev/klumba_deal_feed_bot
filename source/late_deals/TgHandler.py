@@ -10,8 +10,7 @@ def create_reclamation(update: Update, context: CallbackContext):
     link_user = f'<a href="tg://user?id={update.callback_query.from_user.id}">{fullname}</a>'
     massage_text = update.callback_query.message.text
 
-    # res = BH.create_reclamation(deal_id, fullname)
-    res = False
+    res = BH.create_reclamation(deal_id, fullname)
     if res:
         update.callback_query.edit_message_text(text=f"☠ Создана рекламация ({link_user})\n\n{massage_text}",
                                                 parse_mode=ParseMode.HTML)

@@ -297,5 +297,5 @@ def late_deal(context: CallbackContext):
     keyboard = [[InlineKeyboardButton("Ок 👌", callback_data="late_deal_ok")],
                 [InlineKeyboardButton("Создать рекламацию ☠", callback_data=f"late_deal_new_reclamation:{deal_id}")]]
 
-    context.bot.send_message(chat_id=-1001758642612, text=text,
+    context.bot.send_message(chat_id=-1001871720175, text=text,
                              reply_markup=InlineKeyboardMarkup(keyboard))
