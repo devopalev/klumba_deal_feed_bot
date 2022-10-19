@@ -1,4 +1,5 @@
 import pathlib
+import re
 
 import requests
 from telegram.ext import CallbackContext
@@ -291,7 +292,9 @@ def reclamation_new(context: CallbackContext):
 def late_deal(context: CallbackContext):
     query_components = context.job.context
     deal_id = Utils.prepare_external_field(query_components, WEBHOOK_DEAL_ID_ALIAS)
-    text_event = Utils.prepare_external_field(query_components, 'text_event', False).replace('_', '\n')
+    text_event = Utils.prepare_external_field(query_components, 'text_event', False)
+    text_event = re.sub('(_)', '\n', text_event)
+    text_event = re.sub(r'(\[\d+\])', '', text_event)
     keyboard = [[InlineKeyboardButton("Ок 👌", callback_data="late_deal_ok")],
                 [InlineKeyboardButton("Создать рекламацию ☠", callback_data=f"late_deal_new_reclamation:{deal_id}")]]
 
