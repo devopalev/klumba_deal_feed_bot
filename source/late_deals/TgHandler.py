@@ -8,12 +8,12 @@ def create_reclamation(update: Update, context: CallbackContext):
     deal_id = update.callback_query.data.split(':')[1]
     fullname = update.callback_query.from_user.full_name
     link_user = f'<a href="tg://user?id={update.callback_query.from_user.id}">{fullname}</a>'
-    massage_text = update.callback_query.message.text
+    massage_text = update.callback_query.message.text_html
 
     res = BH.create_reclamation(deal_id, fullname)
     if res:
         update.callback_query.edit_message_text(text=f"☠ Создана рекламация ({link_user})\n\n{massage_text}",
-                                                parse_mode=ParseMode.HTML)
+                                                parse_mode=ParseMode.HTML, disable_web_page_preview=True)
     else:
         update.callback_query.message.reply_text("Не удалось создать рекламацию. \n@yngphenix, обрати внимание.")
 
@@ -21,9 +21,9 @@ def create_reclamation(update: Update, context: CallbackContext):
 def late_ok(update: Update, context: CallbackContext):
     fullname = update.callback_query.from_user.full_name
     link_user = f'<a href="tg://user?id={update.callback_query.from_user.id}">{fullname}</a>'
-    massage_text = update.callback_query.message.text
+    massage_text = update.callback_query.message.text_html
     text = f"👌 Причины опоздания легитимны ({link_user})\n\n{massage_text}"
-    update.callback_query.edit_message_text(text=text, parse_mode=ParseMode.HTML)
+    update.callback_query.edit_message_text(text=text, parse_mode=ParseMode.HTML, disable_web_page_preview=True)
 
 
 def register_handlers(dispatcher: Dispatcher):
