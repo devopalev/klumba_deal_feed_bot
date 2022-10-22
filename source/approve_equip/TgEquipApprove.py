@@ -25,14 +25,14 @@ def decision(update: Update, context: CallbackContext):
         link_user = f"[{fullname}](tg://user?id={user_id})"
         msg_text = update.callback_query.message.text_markdown_v2
         update.effective_chat.send_message(Txt.APPROVED_HEADER.format(deal_id, link_user),
-                                           parse_mode=ParseMode.MARKDOWN_V2)
+                                           parse_mode=ParseMode.MARKDOWN_V2, timeout=30)
         update.callback_query.edit_message_text(Txt.APPROVED_HEADER.format(deal_id, link_user) + msg_text,
-                                                parse_mode=ParseMode.MARKDOWN_V2)
+                                                parse_mode=ParseMode.MARKDOWN_V2, timeout=30)
         return ConversationHandler.END
 
     elif action == Txt.EQUIPPED_DECLINE_BUTTON_KEY:
         update.effective_chat.send_message(Txt.REQUEST_DECLINE_COMMENT.format(deal_id),
-                                           reply_to_message_id=update.callback_query.message.message_id)
+                                           reply_to_message_id=update.callback_query.message.message_id, timeout=30)
         context.user_data[cfg.APPROVE_EQUIP_DATA_KEY] = {'message': update.callback_query.message, 'deal_id': deal_id}
         return State.WRITING_DECLINE_COMMENT
 
@@ -67,9 +67,10 @@ def comment(update: Update, context):
             media_list[0].caption = f'⬇⬇⬇ {deal_id} ⬇⬇⬇'
             unapproved_chat.send_media_group(media=media_list)
         unapproved_chat.send_message(text_unapproved, reply_markup=InlineKeyboardMarkup(keyboard),
-                                     parse_mode=ParseMode.MARKDOWN_V2)
-        deal_message.edit_text(text_unapproved, parse_mode=ParseMode.MARKDOWN_V2)
-        update.effective_chat.send_message(Txt.DECLINED_HEADER.format(deal_id), parse_mode=ParseMode.MARKDOWN_V2)
+                                     parse_mode=ParseMode.MARKDOWN_V2, timeout=30)
+        deal_message.edit_text(text_unapproved, parse_mode=ParseMode.MARKDOWN_V2, timeout=30)
+        update.effective_chat.send_message(Txt.DECLINED_HEADER.format(deal_id), parse_mode=ParseMode.MARKDOWN_V2,
+                                           timeout=30)
     return ConversationHandler.END
 
 
@@ -97,11 +98,11 @@ def reapprove(update: Update, context: CallbackContext):
         context.bot.send_media_group(chat_id=creds.EQUIPPED_GROUP_CHAT_ID, media=media_list)
 
     context.bot.send_message(chat_id=creds.EQUIPPED_GROUP_CHAT_ID, text=orig_text,
-                             parse_mode=ParseMode.MARKDOWN_V2, reply_markup=keyboard)
+                             parse_mode=ParseMode.MARKDOWN_V2, reply_markup=keyboard, timeout=30)
 
     text = update.callback_query.message.text_markdown_v2.replace(Txt.DECLINED_HEADER.format(deal_id),
                                                                   Txt.REAPPROVED_HEADER.format(deal_id))
-    update.callback_query.edit_message_text(text, parse_mode=ParseMode.MARKDOWN_V2)
+    update.callback_query.edit_message_text(text, parse_mode=ParseMode.MARKDOWN_V2, timeout=30)
 
 
 def timeout(update: Update, context):
