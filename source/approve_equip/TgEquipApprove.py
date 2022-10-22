@@ -16,7 +16,7 @@ class State:
 
 def decision(update: Update, context: CallbackContext):
     action, deal_id = update.callback_query.data.split(":")
-
+    update.callback_query.answer()
     if action == Txt.EQUIPPED_APPROVE_BUTTON_KEY:
         BH.approve_deal(deal_id)
         context.user_data.pop(cfg.APPROVE_EQUIP_DATA_KEY, None)
@@ -104,17 +104,23 @@ def reapprove(update: Update, context: CallbackContext):
     update.callback_query.edit_message_text(text, parse_mode=ParseMode.MARKDOWN_V2)
 
 
+def timeout(update: Update, context):
+    update.callback_query.message.reply_text("💤 Не дождался ответа в течении 5 минут. "
+                                             "Если необходимо, попробуйте повторно.")
+
+
 def fallback(update, context):
     return None  # do nothing on fallbacks
 
 
 CV_APPROVE_EQUIP_HANDLER = ConversationHandler(
     entry_points=[CallbackQueryHandler(decision,
-                    pattern=f"({Txt.EQUIPPED_APPROVE_BUTTON_KEY}|{Txt.EQUIPPED_DECLINE_BUTTON_KEY})")],
+                                       pattern=f"({Txt.EQUIPPED_APPROVE_BUTTON_KEY}|{Txt.EQUIPPED_DECLINE_BUTTON_KEY})")],
     states={State.WRITING_DECLINE_COMMENT: [MessageHandler(Filters.text & Filters.chat(creds.EQUIPPED_GROUP_CHAT_ID),
-                                                           callback=comment)]},
-    fallbacks=[MessageHandler(Filters.all, callback=fallback), CallbackQueryHandler(fallback)]
+                                                           callback=comment)],
+            ConversationHandler.TIMEOUT: [[CallbackQueryHandler(timeout)]]},
+    fallbacks=[MessageHandler(Filters.all, callback=fallback), CallbackQueryHandler(fallback)],
+    conversation_timeout=300
 )
 
 CV_REAPPROVE_EQUIP_HANDLER = CallbackQueryHandler(reapprove, pattern=Txt.EQUIPPED_REAPPROVE_BUTTON_KEY_PREFIX)
-
