@@ -35,6 +35,7 @@ def decision(update: Update, context: CallbackContext):
                                            reply_to_message_id=update.callback_query.message.message_id, timeout=30)
         context.user_data[cfg.APPROVE_EQUIP_DATA_KEY] = {'message': update.callback_query.message, 'deal_id': deal_id}
         return State.WRITING_DECLINE_COMMENT
+    return ConversationHandler.END
 
 
 def comment(update: Update, context):
