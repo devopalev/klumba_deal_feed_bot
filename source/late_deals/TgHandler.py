@@ -46,6 +46,11 @@ class Storage:
                     rot_data[deal_id] = info
             cls.data = rot_data
 
+    @classmethod
+    def delete(cls, deal_id):
+        with cls._lock:
+            return cls.data.pop(deal_id)
+
 
 def create_reclamation(update: Update, context: CallbackContext):
     deal_id = update.callback_query.data.split(':')[1]
@@ -77,6 +82,7 @@ def register_handlers(dispatcher: Dispatcher):
 def late_deal(context: CallbackContext):
     query_components = context.job.context
     deal_id = Utils.prepare_external_field(query_components, WEBHOOK_DEAL_ID_ALIAS)
+    key_stage = Utils.prepare_external_field(query_components, 'key_stage')
 
     # Форматируем текст
     text_event = Utils.prepare_external_field(query_components, 'text_event', False)
@@ -98,10 +104,24 @@ def late_deal(context: CallbackContext):
     keyboard = [[InlineKeyboardButton("Ок 👌", callback_data="late_deal_ok")],
                 [InlineKeyboardButton("Создать рекламацию ☠", callback_data=f"late_deal_new_reclamation:{deal_id}")]]
 
-    message: Message = context.bot.send_message(chat_id=creds.LATE_DEALS_CHAT_ID, text=text_event,
-                                                reply_markup=InlineKeyboardMarkup(keyboard),
-                                                parse_mode=ParseMode.HTML, disable_web_page_preview=True)
-    header = text_event[0:text_event.find('\n')]
-    Storage.save(deal_id, message.message_id, header)
-    Storage.rotation()
-
+    # Если заказ опоздал, автоматически создаем рекламацию
+    if str(key_stage) == '5':
+        Storage.delete(deal_id)
+        res = BH.create_reclamation(deal_id, "bot")
+        if res:
+            text_event = f"☠ Создана рекламация (автоматически)\n\n{text_event}"
+            context.bot.send_message(chat_id=creds.LATE_DEALS_CHAT_ID, text=text_event,
+                                     parse_mode=ParseMode.HTML, disable_web_page_preview=True)
+            return
+        else:
+            text_event = f"Не удалось автоматически создать рекламацию. \n@yngphenix, обрати внимание.\n\n{text_event}"
+            context.bot.send_message(chat_id=creds.LATE_DEALS_CHAT_ID, text=text_event,
+                                     reply_markup=InlineKeyboardMarkup(keyboard),
+                                     parse_mode=ParseMode.HTML, disable_web_page_preview=True)
+    else:
+        message = context.bot.send_message(chat_id=creds.LATE_DEALS_CHAT_ID, text=text_event,
+                                           reply_markup=InlineKeyboardMarkup(keyboard),
+                                           parse_mode=ParseMode.HTML, disable_web_page_preview=True)
+        header = text_event[0:text_event.find('\n')]
+        Storage.save(deal_id, message.message_id, header)
+        Storage.rotation()
