@@ -289,14 +289,4 @@ def reclamation_new(context: CallbackContext):
     context.bot.send_message(chat_id=creds.RECLAMATION_GROUP_CHAT_ID, text=text, parse_mode=ParseMode.HTML)
 
 
-def late_deal(context: CallbackContext):
-    query_components = context.job.context
-    deal_id = Utils.prepare_external_field(query_components, WEBHOOK_DEAL_ID_ALIAS)
-    text_event = Utils.prepare_external_field(query_components, 'text_event', False)
-    text_event = re.sub('(_)', '\n', text_event)
-    text_event = re.sub(r'(\[\d+\])', '', text_event)
-    keyboard = [[InlineKeyboardButton("Ок 👌", callback_data="late_deal_ok")],
-                [InlineKeyboardButton("Создать рекламацию ☠", callback_data=f"late_deal_new_reclamation:{deal_id}")]]
 
-    context.bot.send_message(chat_id=-1001871720175, text=text_event, reply_markup=InlineKeyboardMarkup(keyboard),
-                             parse_mode=ParseMode.HTML, disable_web_page_preview=True)

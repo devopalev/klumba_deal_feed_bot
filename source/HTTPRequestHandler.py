@@ -7,7 +7,7 @@ from source import BitrixFieldsMappings
 from source import TelegramWorker
 from source import creds
 from source import Jobs
-
+from source.late_deals.TgHandler import late_deal
 
 logger = logging.getLogger(__name__)
 
@@ -43,7 +43,7 @@ class DealUpdatesHandler(BaseHTTPRequestHandler):
                 elif action == BitrixFieldsMappings.BITRIX_ACTION_RECLAMATION_NEW:
                     TelegramWorker.JOB_QUEUE.run_once(callback=Jobs.reclamation_new, when=0, context=query_components)
                 elif action == BitrixFieldsMappings.BITRIX_ACTION_LATE_DEAL:
-                    TelegramWorker.JOB_QUEUE.run_once(callback=Jobs.late_deal, when=0, context=query_components)
+                    TelegramWorker.JOB_QUEUE.run_once(callback=late_deal, when=0, context=query_components)
                 else:
                     logger.error('Wrong Bitrix action passed: %s', action)
             else:
