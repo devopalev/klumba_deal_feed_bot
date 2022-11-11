@@ -289,4 +289,18 @@ def reclamation_new(context: CallbackContext):
     context.bot.send_message(chat_id=creds.RECLAMATION_GROUP_CHAT_ID, text=text, parse_mode=ParseMode.HTML)
 
 
+def send_message(context: CallbackContext):
+    """ Любой текст от битры"""
+    query_components = context.job.context
 
+    formatting = Utils.prepare_external_field(query_components, "formatting", escape_md=False)
+    text = Utils.prepare_external_field(query_components, "text", escape_md=False)
+    chat_id = int(Utils.prepare_external_field(query_components, "chat_id", escape_md=False))
+
+    if formatting == "bitrix":
+        text = text.replace("_", "\n")
+    elif formatting == "telegram":
+        text = text.replace(r"\n", "\n")
+
+    context.bot.send_message(chat_id=chat_id, text=text, parse_mode=ParseMode.HTML,
+                             disable_web_page_preview=True)

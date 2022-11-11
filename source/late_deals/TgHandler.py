@@ -4,6 +4,7 @@ import os
 import re
 import time
 import threading
+from typing import List
 
 from telegram.ext import CallbackContext, CallbackQueryHandler, Dispatcher
 from telegram import Update, ParseMode, InlineKeyboardButton, InlineKeyboardMarkup, Message
@@ -15,41 +16,56 @@ from source.BitrixFieldsAliases import WEBHOOK_DEAL_ID_ALIAS
 logger = logging.getLogger(__name__)
 
 
+class Event:
+    def __init__(self, deal_id, messages: List[Message]):
+        self.deal_id = deal_id
+        self.messages = messages
+        self.header = messages[-1].text[0:messages[-1].text.find('\n')]
+        self.time = datetime.datetime.now()
+
+    def delete_messages(self):
+        for msg in self.messages:
+            msg.delete()
+
+    @property
+    def time_str(self):
+        return self.time.strftime('%m.%d %H:%M')
+
+
 class Storage:
     _lock = threading.Lock()
     data = {}
     storage_limit = datetime.timedelta(days=2)
 
     @classmethod
-    def get_history(cls, deal_id):
+    def get_history(cls, deal_id) -> List[Event]:
         with cls._lock:
             return cls.data.get(deal_id)
 
     @classmethod
-    def save(cls, deal_id, message_id, header):
-        now = datetime.datetime.now()
-        info = {"time": now, "message_id": message_id, "header": header}
+    def save(cls, deal_id, messages: list):
+        event = Event(deal_id, messages)
         with cls._lock:
             curr: list = cls.data.get(deal_id)
             if curr:
-                curr.append(info)
+                curr.append(event)
             else:
-                cls.data[deal_id] = [info]
+                cls.data[deal_id] = [event]
 
     @classmethod
     def rotation(cls):
         now = datetime.datetime.now()
         rot_data = {}
         with cls._lock:
-            for deal_id, info in cls.data.items():
-                if now - info[-1]['time'] < cls.storage_limit:
-                    rot_data[deal_id] = info
+            for deal_id, events in cls.data.items():
+                if now - events[-1].time < cls.storage_limit:
+                    rot_data[deal_id] = events
             cls.data = rot_data
 
     @classmethod
     def delete(cls, deal_id):
         with cls._lock:
-            return cls.data.pop(deal_id)
+            cls.data.pop(deal_id)
 
 
 def create_reclamation(update: Update, context: CallbackContext):
@@ -93,12 +109,12 @@ def late_deal(context: CallbackContext):
     # Добавляем историю уведомлений и очищаем старые
     if history:
         try:
-            context.bot.delete_message(creds.LATE_DEALS_CHAT_ID, history[-1]['message_id'])
+            history[-1].delete_messages()
         except Exception as err:
-            logger.error(f"Не удалось удалить прошлое сообщение (deal {deal_id}): {err}")
+            logger.error(f"Не удалось удалить прошлые сообщение (deal {deal_id}): {err}")
         history_text = "\n\n<b>История уведомлений:</b>"
         for event in history:
-            history_text += f"\n<b>{event['time'].strftime('%m.%d %H:%M')}:</b> {event['header']}"
+            history_text += f"\n<b>{event.time_str}:</b> {event.header}"
         text_event += history_text
 
     keyboard = [[InlineKeyboardButton("Ок 👌", callback_data="late_deal_ok")],
@@ -108,6 +124,8 @@ def late_deal(context: CallbackContext):
     if str(key_stage) == '5':
         Storage.delete(deal_id)
         res = BH.create_reclamation(deal_id, "bot")
+        context.bot.send_message(chat_id=creds.TIMERS_SLUZHBA_ZAKAZOV_CHAT_ID, text=text_event,
+                                 parse_mode=ParseMode.HTML, disable_web_page_preview=True)
         if res:
             text_event = f"☠ Создана рекламация (автоматически)\n\n{text_event}"
             context.bot.send_message(chat_id=creds.LATE_DEALS_CHAT_ID, text=text_event,
@@ -119,9 +137,11 @@ def late_deal(context: CallbackContext):
                                      reply_markup=InlineKeyboardMarkup(keyboard),
                                      parse_mode=ParseMode.HTML, disable_web_page_preview=True)
     else:
-        message = context.bot.send_message(chat_id=creds.LATE_DEALS_CHAT_ID, text=text_event,
-                                           reply_markup=InlineKeyboardMarkup(keyboard),
-                                           parse_mode=ParseMode.HTML, disable_web_page_preview=True)
-        header = text_event[0:text_event.find('\n')]
-        Storage.save(deal_id, message.message_id, header)
+        mes1 = context.bot.send_message(chat_id=creds.TIMERS_SLUZHBA_ZAKAZOV_CHAT_ID, text=text_event,
+                                        parse_mode=ParseMode.HTML, disable_web_page_preview=True)
+        mes2 = context.bot.send_message(chat_id=creds.LATE_DEALS_CHAT_ID, text=text_event,
+                                        reply_markup=InlineKeyboardMarkup(keyboard),
+                                        parse_mode=ParseMode.HTML, disable_web_page_preview=True)
+
+        Storage.save(deal_id, [mes1, mes2])
         Storage.rotation()
